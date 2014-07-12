@@ -9,9 +9,6 @@ class PoissonBlendingApp(Tkinter.Tk):
     def __init__(self, parent):
         Tkinter.Tk.__init__(self, parent)
         self.parent = parent
-        self.entry = None
-        self.label_text = None
-        self.entry_text = None
 
         self.image_mask = None
         self.image_src = None
@@ -21,10 +18,6 @@ class PoissonBlendingApp(Tkinter.Tk):
 
         self.initialize()
 
-    def select_entry_text(self):
-        self.entry.focus_set()
-        self.entry.selection_range(0, Tkinter.END)
-
     def initialize(self):
         self.grid()
 
@@ -33,7 +26,7 @@ class PoissonBlendingApp(Tkinter.Tk):
         self.image_mask = PIL.Image.open('./testimages/test1_mask.png')
         self.image_src = PIL.Image.open('./testimages/test1_src.png').convert("RGB")
         self.image_masked_src = PIL.Image.blend(self.image_src, self.image_mask.convert("RGB"), 0.3)
-        print "Blending.."
+        # print "Blending.."
         self.blend()
 
         # Display images
