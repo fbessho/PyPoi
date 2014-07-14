@@ -14,6 +14,7 @@ class ImageManager():
         if len(path) > 0:
             self.path = path
             self.load()
+            self.draw()
 
     def set_path(self, path):
         self.path = path

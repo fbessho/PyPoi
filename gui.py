@@ -10,6 +10,8 @@ from image_managers import SourceImageManager, DestinationImageManager
 
 
 class PoissonBlendingApp(Tkinter.Tk):
+    COLUMN_WIDTH = 600
+
     def __init__(self, parent):
         Tkinter.Tk.__init__(self, parent)
         self.src_img_manager = SourceImageManager()
@@ -40,13 +42,13 @@ class PoissonBlendingApp(Tkinter.Tk):
         self.grid()
 
         # Source and Destination images
-        label_dst = Tkinter.Label(self)
+        label_dst = Tkinter.Label(self, width=self.COLUMN_WIDTH)
         label_dst.grid(row=0, column=0)
         self.dst_img_manager.set_tk_label(label_dst)
 
         Tkinter.Label(self, text="+").grid(row=0, column=1)
 
-        label_src = Tkinter.Label(self)
+        label_src = Tkinter.Label(self, width=self.COLUMN_WIDTH)
         label_src.grid(row=0, column=2)
         self.src_img_manager.set_tk_label(label_src)
 
@@ -96,6 +98,10 @@ class PoissonBlendingApp(Tkinter.Tk):
                               command=self.dst_img_manager.open_from_dialog)
         menu_bar.add_cascade(label="File", menu=file_menu)
 
+        run_menu = Tkinter.Menu(menu_bar)
+        run_menu.add_command(label='Blend!', command=self.blend)
+        menu_bar.add_cascade(label="Run", menu=run_menu)
+
         self.config(menu=menu_bar)
 
     def blend(self):
@@ -106,8 +112,9 @@ class PoissonBlendingApp(Tkinter.Tk):
         mask = np.asarray(self.src_img_manager.image_mask)
         mask.flags.writeable = True
 
-        # invert sign of offset
-        reversed_offset = self.dst_img_manager.offset[::-1]  # poissonblending.blend takes (y, x) as offset, so reverse it.
+        # poissonblending.blend takes (y, x) as offset,
+        # whereas gui has (x, y) as offset values so reverse these values.
+        reversed_offset = self.dst_img_manager.offset[::-1]
         blended_image = poissonblending.blend(dst, src, mask, reversed_offset)
         self.image_result = PIL.Image.fromarray(np.uint8(blended_image))
         self.image_tk_result = PIL.ImageTk.PhotoImage(self.image_result)
