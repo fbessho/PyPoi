@@ -14,7 +14,7 @@ class PoissonBlendingApp(Tkinter.Tk):
     def __init__(self, parent):
         Tkinter.Tk.__init__(self, parent)
         self.src_img_manager = SourceImageManager()
-        self.dst_img_manager = DestinationImageManager()
+        self.dst_img_manager = DestinationImageManager(self.src_img_manager)
 
         self.parent = parent
         self.entry = None
@@ -34,6 +34,8 @@ class PoissonBlendingApp(Tkinter.Tk):
 
         self.dst_img_manager.set_path('./testimages/test1_target.png')
         self.dst_img_manager.load()
+
+        self.src_img_manager.draw()
 
     def create_widgets(self):
         self.grid()
@@ -76,9 +78,9 @@ class PoissonBlendingApp(Tkinter.Tk):
 
         file_menu = Tkinter.Menu(menu_bar)
         file_menu.add_command(label='Open Source Image',
-                              command=self.src_img_manager.open)
+                              command=self.src_img_manager.open_from_dialog)
         file_menu.add_command(label='Open Destination Image',
-                              command=self.dst_img_manager.open)
+                              command=self.dst_img_manager.open_from_dialog)
         menu_bar.add_cascade(label="File", menu=file_menu)
 
         self.config(menu=menu_bar)
@@ -91,12 +93,15 @@ class PoissonBlendingApp(Tkinter.Tk):
         mask = np.asarray(self.src_img_manager.image_mask)
         mask.flags.writeable = True
 
-        blended_image = poissonblending.blend(dst, src, mask, offset=(40, -30))
+        # invert sign of offset
+        inverted_offset = tuple(map(lambda x: -x, self.dst_img_manager.offset))
+        blended_image = poissonblending.blend(dst, src, mask, inverted_offset)
         self.image_result = PIL.Image.fromarray(np.uint8(blended_image))
         self.image_tk_result = PIL.ImageTk.PhotoImage(self.image_result)
 
         result_window = Tkinter.Toplevel()
         label = Tkinter.Label(result_window, image=self.image_tk_result)
+        label.image = self.image_tk_result  # for holding reference counter
         label.pack()
         result_window.title("Blended Result")
 

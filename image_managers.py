@@ -9,7 +9,7 @@ class ImageManager():
     def __init__(self):
         pass
 
-    def open(self):
+    def open_from_dialog(self):
         path = tkFileDialog.askopenfilename()
         if len(path) > 0:
             self.path = path
@@ -33,21 +33,26 @@ class SourceImageManager(ImageManager):
 
     def __init__(self):
         ImageManager.__init__(self)
+        self.draw_propagate_functions = []
 
     def set_edit_mode_str(self, edit_mode_str):
         self.edit_mode = edit_mode_str
 
+    def add_propagation_func(self, callback_func):
+        self.draw_propagate_functions.append(callback_func)
+
     def load(self):
         self.image_src = PIL.Image.open(self.path).convert("RGB")
         self.image_mask = PIL.Image.new('L', self.image_src.size)
-        self.refresh()
 
-    def refresh(self):
+    def draw(self):
         self.image_masked_src = PIL.Image.blend(self.image_src,
                                                 self.image_mask.convert("RGB"),
                                                 0.3)
         self.image_tk_masked_src = PIL.ImageTk.PhotoImage(self.image_masked_src)
         self.tk_label.configure(image=self.image_tk_masked_src)
+        for f in self.draw_propagate_functions:
+            f()
 
     def on_mouse_down(self, event):
         if self.edit_mode.get() == 'move':
@@ -64,7 +69,7 @@ class SourceImageManager(ImageManager):
             dx = event.x - self.sx
             dy = event.y - self.sy
             self.image_mask = ImageChops.offset(self.image_mask, dx, dy)
-            self.refresh()
+            self.draw()
 
             self.sx, self.sy = event.x, event.y
         elif self.edit_mode.get() == 'draw':
@@ -81,20 +86,36 @@ class SourceImageManager(ImageManager):
                 ny = y + dy
                 if 0 <= nx < mx and 0 <= ny < my:
                     pixel[x + dx, y + dy] = new_value
-        self.refresh()
+        self.draw()
 
 
 class DestinationImageManager(ImageManager):
-    def __init__(self):
+    def __init__(self, src_img_manager):
         ImageManager.__init__(self)
+        self.src_img_manager = src_img_manager
+        self.src_img_manager.add_propagation_func(self.draw)
+        self.offset = (0, 0)
 
     def load(self):
         self.image = PIL.Image.open(self.path).convert("RGB")
-        self.image_tk = PIL.ImageTk.PhotoImage(self.image)
+
+    def draw(self):
+        image_to_show = self.image.copy()
+        img_src = self.src_img_manager.image_src
+        mask = self.src_img_manager.image_mask
+
+        image_to_show.paste(img_src, self.offset, mask)
+
+        self.image_tk = PIL.ImageTk.PhotoImage(image_to_show)
         self.tk_label.configure(image=self.image_tk)
 
     def on_mouse_down(self, event):
-        pass
+        self.sx, self.sy = event.x, event.y
 
     def on_mouse_move(self, event):
-        pass
+        dx, dy = (event.x - self.sx, event.y - self.sy)
+        x, y = self.offset
+        self.offset = (x + dx, y + dy)
+        self.draw()
+
+        self.sx, self.sy = event.x, event.y
