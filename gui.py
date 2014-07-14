@@ -23,9 +23,10 @@ class PoissonBlendingApp(Tkinter.Tk):
 
         self.initialize()
 
-    def initialize(self):
+    def create_widgets(self):
         self.grid()
 
+        # Source and Destination images
         self.label_dst = Tkinter.Label(self)
         self.label_dst.grid(row=0, column=0)
 
@@ -38,14 +39,15 @@ class PoissonBlendingApp(Tkinter.Tk):
         self.label_src.bind('<Button-1>', self.on_mouse_down)
         self.label_src.bind('<B1-Motion>', self.on_mouse_move)
 
+        # Draw/Erase/Move buttons
         self.edit_options_frame = Tkinter.Frame(self)
         self.edit_options_frame.grid(row=1, column=2)
         self.edit_mode = Tkinter.StringVar()
         self.edit_mode.set('draw')
         edit_options = (
-                ('Draw', 'draw'),
-                ('Erase', 'erase'),
-                ('Move', 'move'),
+            ('Draw', 'draw'),
+            ('Erase', 'erase'),
+            ('Move', 'move'),
         )
         for text, mode in edit_options:
             b = Tkinter.Radiobutton(self.edit_options_frame, text=text,
@@ -53,17 +55,16 @@ class PoissonBlendingApp(Tkinter.Tk):
                                     indicatoron=0)
             b.pack(side=Tkinter.LEFT)
 
+        # Blend button
         Tkinter \
             .Button(self, text=u'Blend', command=self.blend) \
             .grid(row=2, column=0, columnspan=3)
 
+    def initialize(self):
+
+        self.create_widgets()
+
         self.load_images(src_path='./testimages/test1_src.png', dst_path='./testimages/test1_target.png')
-
-
-        self.grid_columnconfigure(0, weight=1)
-        # self.resizable(True, False)
-        self.update()
-        self.geometry(self.geometry())
 
     def load_images(self, src_path, dst_path):
         self.image_src = PIL.Image.open(src_path).convert("RGB")
