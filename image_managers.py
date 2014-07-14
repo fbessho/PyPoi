@@ -12,8 +12,10 @@ class SourceImageManager():
         pass
 
     def open(self):
-        self.path = tkFileDialog.askopenfilename()
-        self.load()
+        path = tkFileDialog.askopenfilename()
+        if len(path) > 0:
+            self.path = path
+            self.load()
 
     def set_path(self, path):
         self.path = path

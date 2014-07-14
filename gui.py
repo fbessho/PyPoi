@@ -106,8 +106,10 @@ class PoissonBlendingApp(Tkinter.Tk):
         result_window.title("Blended Result")
 
     def open_dst_file(self):
-        self.dst_path = tkFileDialog.askopenfilename()
-        self.load_dst()
+        path = tkFileDialog.askopenfilename()
+        if len(path) > 0:
+            self.dst_path = path
+            self.load_dst()
 
 
 if __name__ == "__main__":
