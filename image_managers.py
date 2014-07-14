@@ -5,9 +5,7 @@ import ImageChops
 import tkFileDialog
 
 
-class SourceImageManager():
-    """Manage source image and mask image"""
-
+class ImageManager():
     def __init__(self):
         pass
 
@@ -24,6 +22,17 @@ class SourceImageManager():
         tk_label.bind('<Button-1>', self.on_mouse_down)
         tk_label.bind('<B1-Motion>', self.on_mouse_move)
         self.tk_label = tk_label
+
+
+class SourceImageManager(ImageManager):
+    """Manage source image and mask image
+    self.path       - path to source image file
+    self.image_src  - PIL.Image object of source image
+    self.image_mask - PIL.Image object of mask image
+    """
+
+    def __init__(self):
+        ImageManager.__init__(self)
 
     def set_edit_mode_str(self, edit_mode_str):
         self.edit_mode = edit_mode_str
@@ -73,3 +82,19 @@ class SourceImageManager():
                 if 0 <= nx < mx and 0 <= ny < my:
                     pixel[x + dx, y + dy] = new_value
         self.refresh()
+
+
+class DestinationImageManager(ImageManager):
+    def __init__(self):
+        ImageManager.__init__(self)
+
+    def load(self):
+        self.image = PIL.Image.open(self.path).convert("RGB")
+        self.image_tk = PIL.ImageTk.PhotoImage(self.image)
+        self.tk_label.configure(image=self.image_tk)
+
+    def on_mouse_down(self, event):
+        pass
+
+    def on_mouse_move(self, event):
+        pass

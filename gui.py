@@ -7,20 +7,20 @@ import PIL.ImageTk
 import numpy as np
 
 import poissonblending
-from image_managers import SourceImageManager
+from image_managers import SourceImageManager, DestinationImageManager
 
 
 class PoissonBlendingApp(Tkinter.Tk):
     def __init__(self, parent):
         Tkinter.Tk.__init__(self, parent)
         self.src_img_manager = SourceImageManager()
+        self.dst_img_manager = DestinationImageManager()
 
         self.parent = parent
         self.entry = None
         self.label_text = None
         self.entry_text = None
 
-        self.image_dst = None
         self.image_result = None
 
         self.initialize()
@@ -32,16 +32,16 @@ class PoissonBlendingApp(Tkinter.Tk):
         self.src_img_manager.set_path('./testimages/test1_src.png')
         self.src_img_manager.load()
 
-        self.dst_path = './testimages/test1_target.png'
-        # self.load_src()
-        self.load_dst()
+        self.dst_img_manager.set_path('./testimages/test1_target.png')
+        self.dst_img_manager.load()
 
     def create_widgets(self):
         self.grid()
 
         # Source and Destination images
-        self.label_dst = Tkinter.Label(self)
-        self.label_dst.grid(row=0, column=0)
+        label_dst = Tkinter.Label(self)
+        label_dst.grid(row=0, column=0)
+        self.dst_img_manager.set_tk_label(label_dst)
 
         Tkinter.Label(self, text="+").grid(row=0, column=1)
 
@@ -78,20 +78,15 @@ class PoissonBlendingApp(Tkinter.Tk):
         file_menu.add_command(label='Open Source Image',
                               command=self.src_img_manager.open)
         file_menu.add_command(label='Open Destination Image',
-                              command=self.open_dst_file)
+                              command=self.dst_img_manager.open)
         menu_bar.add_cascade(label="File", menu=file_menu)
 
         self.config(menu=menu_bar)
 
-    def load_dst(self):
-        self.image_dst = PIL.Image.open(self.dst_path).convert("RGB")
-        self.image_tk_dst = PIL.ImageTk.PhotoImage(self.image_dst)
-        self.label_dst.configure(image=self.image_tk_dst)
-
     def blend(self):
         src = np.asarray(self.src_img_manager.image_src)
         src.flags.writeable = True
-        dst = np.asarray(self.image_dst)
+        dst = np.asarray(self.dst_img_manager.image)
         dst.flags.writeable = True
         mask = np.asarray(self.src_img_manager.image_mask)
         mask.flags.writeable = True
@@ -104,12 +99,6 @@ class PoissonBlendingApp(Tkinter.Tk):
         label = Tkinter.Label(result_window, image=self.image_tk_result)
         label.pack()
         result_window.title("Blended Result")
-
-    def open_dst_file(self):
-        path = tkFileDialog.askopenfilename()
-        if len(path) > 0:
-            self.dst_path = path
-            self.load_dst()
 
 
 if __name__ == "__main__":
