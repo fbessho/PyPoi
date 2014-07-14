@@ -34,6 +34,11 @@ class SourceImageManager(ImageManager):
     def __init__(self):
         ImageManager.__init__(self)
         self.draw_propagate_functions = []
+        self.ZOOM_FUNCTIONS = {
+            '+': self.zoom_by_ten_percent,
+            '-': self.shrink_by_ten_percent,
+            'original': self.reset_size
+        }
 
     def set_edit_mode_str(self, edit_mode_str):
         self.edit_mode = edit_mode_str
@@ -44,6 +49,8 @@ class SourceImageManager(ImageManager):
     def load(self):
         self.image_src = PIL.Image.open(self.path).convert("RGB")
         self.image_mask = PIL.Image.new('L', self.image_src.size)
+        self.original_size = self.image_src.size
+        self.current_scale_percentage = 100
 
     def draw(self):
         self.image_masked_src = PIL.Image.blend(self.image_src,
@@ -87,6 +94,25 @@ class SourceImageManager(ImageManager):
                 if 0 <= nx < mx and 0 <= ny < my:
                     pixel[x + dx, y + dy] = new_value
         self.draw()
+
+    def resize(self, new_scale):
+        self.image_src = PIL.Image.open(self.path).convert("RGB")
+        new_size = tuple([int(x * new_scale) for x in self.image_src.size])
+        self.image_src = self.image_src.resize(new_size)
+        self.image_mask = self.image_mask.resize(new_size)
+        self.draw()
+
+    def shrink_by_ten_percent(self):
+        self.current_scale_percentage -= 10
+        self.resize(self.current_scale_percentage/100.0)
+
+    def zoom_by_ten_percent(self):
+        self.current_scale_percentage += 10
+        self.resize(self.current_scale_percentage/100.0)
+
+    def reset_size(self):
+        self.current_scale_percentage = 100
+        self.resize(1)
 
 
 class DestinationImageManager(ImageManager):

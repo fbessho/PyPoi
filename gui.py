@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import Tkinter
-import tkFileDialog
 
 import PIL.Image
 import PIL.ImageTk
@@ -52,8 +51,8 @@ class PoissonBlendingApp(Tkinter.Tk):
         self.src_img_manager.set_tk_label(label_src)
 
         # Draw/Erase/Move buttons
-        self.edit_options_frame = Tkinter.Frame(self)
-        self.edit_options_frame.grid(row=1, column=2)
+        edit_options_frame = Tkinter.Frame(self)
+        edit_options_frame.grid(row=1, column=2)
         edit_mode = Tkinter.StringVar()
         edit_mode.set('draw')
         edit_options = (
@@ -62,16 +61,30 @@ class PoissonBlendingApp(Tkinter.Tk):
             ('Move', 'move'),
         )
         for text, mode in edit_options:
-            b = Tkinter.Radiobutton(self.edit_options_frame, text=text,
+            b = Tkinter.Radiobutton(edit_options_frame, text=text,
                                     variable=edit_mode, value=mode,
                                     indicatoron=0)
             b.pack(side=Tkinter.LEFT)
         self.src_img_manager.set_edit_mode_str(edit_mode)
 
+        # Size buttons
+        def _draw_size_buttons(row, column, functions):
+            size_buttons = Tkinter.Frame(self)
+            size_buttons.grid(row=row, column=column)
+            plus_button = Tkinter.Button(size_buttons, text='+', width=2, command=functions['+'])
+            original_buttton = Tkinter.Button(size_buttons, text='100%', width=5, command=functions['original'])
+            minus_button = Tkinter.Button(size_buttons, text='-', width=2, command=functions['-'])
+            minus_button.pack(side=Tkinter.LEFT)
+            original_buttton.pack(side=Tkinter.LEFT)
+            plus_button.pack(side=Tkinter.LEFT)
+
+        # _draw_size_buttons(2, 0, self.dst_img_manager.ZOOM_FUNCTIONS)  # Size buttons for destination image
+        _draw_size_buttons(2, 2, self.src_img_manager.ZOOM_FUNCTIONS)  # Size buttons for source image
+
         # Blend button
         Tkinter \
             .Button(self, text=u'Blend', command=self.blend) \
-            .grid(row=2, column=0, columnspan=3)
+            .grid(row=3, column=0, columnspan=3)
 
     def create_menu(self):
         menu_bar = Tkinter.Menu(self)
@@ -94,8 +107,8 @@ class PoissonBlendingApp(Tkinter.Tk):
         mask.flags.writeable = True
 
         # invert sign of offset
-        inverted_offset = tuple(map(lambda x: -x, self.dst_img_manager.offset))
-        blended_image = poissonblending.blend(dst, src, mask, inverted_offset)
+        reversed_offset = self.dst_img_manager.offset[::-1]  # poissonblending.blend takes (y, x) as offset, so reverse it.
+        blended_image = poissonblending.blend(dst, src, mask, reversed_offset)
         self.image_result = PIL.Image.fromarray(np.uint8(blended_image))
         self.image_tk_result = PIL.ImageTk.PhotoImage(self.image_result)
 
