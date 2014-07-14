@@ -3,9 +3,8 @@ import Tkinter
 import tkFileDialog
 import PIL.Image
 import PIL.ImageTk
-from PIL import ImageChops
-import poissonblending
 import numpy as np
+import poissonblending
 from image_managers import SourceImageManager
 
 
