@@ -7,6 +7,7 @@ import tkFileDialog
 
 class SourceImageManager():
     """Manage source image and mask image"""
+
     def __init__(self):
         pass
 
@@ -31,7 +32,9 @@ class SourceImageManager():
         self.refresh()
 
     def refresh(self):
-        self.image_masked_src = PIL.Image.blend(self.image_src, self.image_mask.convert("RGB"), 0.3)
+        self.image_masked_src = PIL.Image.blend(self.image_src,
+                                                self.image_mask.convert("RGB"),
+                                                0.3)
         self.image_tk_masked_src = PIL.ImageTk.PhotoImage(self.image_masked_src)
         self.tk_label.configure(image=self.image_tk_masked_src)
 
@@ -66,5 +69,5 @@ class SourceImageManager():
                 nx = x + dx
                 ny = y + dy
                 if 0 <= nx < mx and 0 <= ny < my:
-                    pixel[x+dx, y+dy] = new_value
+                    pixel[x + dx, y + dy] = new_value
         self.refresh()
