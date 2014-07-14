@@ -112,9 +112,9 @@ class PoissonBlendingApp(Tkinter.Tk):
             print "Mouse button down:", event.x, event.y
             self.sx, self.sy = event.x, event.y
         elif self.edit_mode.get() == 'draw':
-            pass
+            self.modify_mask(event.x, event.y, 255)
         elif self.edit_mode.get() == 'erase':
-            pass
+            self.modify_mask(event.x, event.y, 0)
 
     def on_mouse_move(self, event):
         if self.edit_mode.get() == 'move':
