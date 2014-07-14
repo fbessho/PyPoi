@@ -35,8 +35,6 @@ class PoissonBlendingApp(Tkinter.Tk):
         self.image_mask = PIL.Image.open('./testimages/test1_mask.png')
         self.image_src = PIL.Image.open('./testimages/test1_src.png').convert("RGB")
         self.image_masked_src = PIL.Image.blend(self.image_src, self.image_mask.convert("RGB"), 0.3)
-        # print "Blending.."
-        # self.blend()
 
         # Display images
         self.image_tk_masked_src = PIL.ImageTk.PhotoImage(self.image_masked_src)
@@ -56,9 +54,24 @@ class PoissonBlendingApp(Tkinter.Tk):
         self.label_src.bind('<Button-1>', self.on_mouse_down)
         self.label_src.bind('<B1-Motion>', self.on_mouse_move)
 
+        self.edit_options_frame = Tkinter.Frame(self)
+        self.edit_options_frame.grid(row=1, column=2)
+        self.edit_mode = Tkinter.StringVar()
+        self.edit_mode.set('draw')
+        edit_options = (
+                ('Draw', 'draw'),
+                ('Erase', 'erase'),
+                ('Move', 'move'),
+        )
+        for text, mode in edit_options:
+            b = Tkinter.Radiobutton(self.edit_options_frame, text=text,
+                                    variable=self.edit_mode, value=mode,
+                                    indicatoron=0)
+            b.pack(side=Tkinter.LEFT)
+
         Tkinter \
             .Button(self, text=u'Blend', command=self.blend) \
-            .grid(row=1, column=0, columnspan=3)
+            .grid(row=2, column=0, columnspan=3)
 
         self.grid_columnconfigure(0, weight=1)
         # self.resizable(True, False)
@@ -83,19 +96,43 @@ class PoissonBlendingApp(Tkinter.Tk):
         result_window.title("Blended Result")
 
     def on_mouse_down(self, event):
-        print "Mouse button down:", event.x, event.y
-        self.sx, self.sy = event.x, event.y
+        if self.edit_mode.get() == 'move':
+            print "Mouse button down:", event.x, event.y
+            self.sx, self.sy = event.x, event.y
+        elif self.edit_mode.get() == 'draw':
+            pass
+        elif self.edit_mode.get() == 'erase':
+            pass
 
     def on_mouse_move(self, event):
-        print "Mouse move:", event.x, event.y
-        dx = event.x - self.sx
-        dy = event.y - self.sy
-        self.image_mask = ImageChops.offset(self.image_mask, dx, dy)
+        if self.edit_mode.get() == 'move':
+            print "Mouse move:", event.x, event.y
+            dx = event.x - self.sx
+            dy = event.y - self.sy
+            self.image_mask = ImageChops.offset(self.image_mask, dx, dy)
+            self.update_image_masked_src()
+
+            self.sx, self.sy = event.x, event.y
+        elif self.edit_mode.get() == 'draw':
+            self.modify_mask(event.x, event.y, 255)
+        elif self.edit_mode.get() == 'erase':
+            self.modify_mask(event.x, event.y, 0)
+
+    def update_image_masked_src(self):
         self.image_masked_src = PIL.Image.blend(self.image_src, self.image_mask.convert("RGB"), 0.3)
         self.image_tk_masked_src = PIL.ImageTk.PhotoImage(self.image_masked_src)
-        self.label_src.configure(image = self.image_tk_masked_src)
+        self.label_src.configure(image=self.image_tk_masked_src)
 
-        self.sx, self.sy = event.x, event.y
+    def modify_mask(self, x, y, new_value):
+        pixel = self.image_mask.load()
+        mx, my = self.image_mask.size
+        for dx in range(-10, 11):
+            for dy in range(-10, 11):
+                nx = x + dx
+                ny = y + dy
+                if 0 <= nx < mx and 0 <= ny < my:
+                    pixel[x+dx, y+dy] = new_value
+        self.update_image_masked_src()
 
 
 if __name__ == "__main__":
