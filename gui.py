@@ -26,26 +26,14 @@ class PoissonBlendingApp(Tkinter.Tk):
     def initialize(self):
         self.grid()
 
-        # Load images
-        self.image_dst = PIL.Image.open('./testimages/test1_target.png').convert("RGB")
-        self.image_src = PIL.Image.open('./testimages/test1_src.png').convert("RGB")
-        self.image_mask = PIL.Image.new('L', self.image_src.size)
-        self.image_masked_src = PIL.Image.blend(self.image_src, self.image_mask.convert("RGB"), 0.3)
-
-        # Display images
-        self.image_tk_masked_src = PIL.ImageTk.PhotoImage(self.image_masked_src)
-        self.image_tk_dst = PIL.ImageTk.PhotoImage(self.image_dst)
-        # self.image_tk_result = PIL.ImageTk.PhotoImage(self.image_result)
-
-        Tkinter \
-            .Label(self, image=self.image_tk_dst) \
-            .grid(row=0, column=0)
+        self.label_dst = Tkinter.Label(self)
+        self.label_dst.grid(row=0, column=0)
 
         Tkinter \
             .Label(self, text="+") \
             .grid(row=0, column=1)
 
-        self.label_src = Tkinter.Label(self, image=self.image_tk_masked_src)
+        self.label_src = Tkinter.Label(self)  # , image=self.image_tk_masked_src)
         self.label_src.grid(row=0, column=2)
         self.label_src.bind('<Button-1>', self.on_mouse_down)
         self.label_src.bind('<B1-Motion>', self.on_mouse_move)
@@ -69,10 +57,23 @@ class PoissonBlendingApp(Tkinter.Tk):
             .Button(self, text=u'Blend', command=self.blend) \
             .grid(row=2, column=0, columnspan=3)
 
+        self.load_images(src_path='./testimages/test1_src.png', dst_path='./testimages/test1_target.png')
+
+
         self.grid_columnconfigure(0, weight=1)
         # self.resizable(True, False)
         self.update()
         self.geometry(self.geometry())
+
+    def load_images(self, src_path, dst_path):
+        self.image_src = PIL.Image.open(src_path).convert("RGB")
+        self.image_dst = PIL.Image.open(dst_path).convert("RGB")
+        self.image_mask = PIL.Image.new('L', self.image_src.size)
+
+        self.image_tk_dst = PIL.ImageTk.PhotoImage(self.image_dst)
+        self.label_dst.configure(image=self.image_tk_dst)
+
+        self.update_image_masked_src()
 
     def blend(self):
         src = np.asarray(self.image_src)
