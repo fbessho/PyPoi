@@ -32,8 +32,8 @@ class PoissonBlendingApp(Tkinter.Tk):
 
         # Load images
         self.image_dst = PIL.Image.open('./testimages/test1_target.png').convert("RGB")
-        self.image_mask = PIL.Image.open('./testimages/test1_mask.png')
         self.image_src = PIL.Image.open('./testimages/test1_src.png').convert("RGB")
+        self.image_mask = PIL.Image.new('L', self.image_src.size)
         self.image_masked_src = PIL.Image.blend(self.image_src, self.image_mask.convert("RGB"), 0.3)
 
         # Display images
