@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import Tkinter
+import tkFileDialog
 import PIL.Image
 import PIL.ImageTk
 from PIL import ImageChops
@@ -60,20 +61,33 @@ class PoissonBlendingApp(Tkinter.Tk):
             .Button(self, text=u'Blend', command=self.blend) \
             .grid(row=2, column=0, columnspan=3)
 
-    def initialize(self):
+    def create_menu(self):
+        menu_bar = Tkinter.Menu(self)
 
+        file_menu = Tkinter.Menu(menu_bar)
+        file_menu.add_command(label='Open Source Image', command=self.open_src_file)
+        file_menu.add_command(label='Open Destination Image', command=self.open_dst_file)
+        menu_bar.add_cascade(label="File", menu=file_menu)
+
+        self.config(menu=menu_bar)
+
+    def initialize(self):
+        self.create_menu()
         self.create_widgets()
 
-        self.load_images(src_path='./testimages/test1_src.png', dst_path='./testimages/test1_target.png')
+        self.src_path='./testimages/test1_src.png'
+        self.dst_path='./testimages/test1_target.png'
+        self.load_src()
+        self.load_dst()
 
-    def load_images(self, src_path, dst_path):
-        self.image_src = PIL.Image.open(src_path).convert("RGB")
-        self.image_dst = PIL.Image.open(dst_path).convert("RGB")
-        self.image_mask = PIL.Image.new('L', self.image_src.size)
-
+    def load_dst(self):
+        self.image_dst = PIL.Image.open(self.dst_path).convert("RGB")
         self.image_tk_dst = PIL.ImageTk.PhotoImage(self.image_dst)
         self.label_dst.configure(image=self.image_tk_dst)
 
+    def load_src(self):
+        self.image_src = PIL.Image.open(self.src_path).convert("RGB")
+        self.image_mask = PIL.Image.new('L', self.image_src.size)
         self.update_image_masked_src()
 
     def blend(self):
@@ -131,6 +145,14 @@ class PoissonBlendingApp(Tkinter.Tk):
                 if 0 <= nx < mx and 0 <= ny < my:
                     pixel[x+dx, y+dy] = new_value
         self.update_image_masked_src()
+
+    def open_src_file(self):
+        self.src_path = tkFileDialog.askopenfilename()
+        self.load_src()
+
+    def open_dst_file(self):
+        self.dst_path = tkFileDialog.askopenfilename()
+        self.load_dst()
 
 
 if __name__ == "__main__":
