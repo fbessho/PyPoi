@@ -12,9 +12,12 @@ class ImageManager():
     def open_from_dialog(self):
         path = tkFileDialog.askopenfilename()
         if len(path) > 0:
-            self.path = path
-            self.load()
-            self.draw()
+            self.open(path)
+
+    def open(self, path):
+        self.path = path
+        self.load()
+        self.draw()
 
     def set_path(self, path):
         self.path = path

@@ -10,6 +10,8 @@ from image_managers import SourceImageManager, DestinationImageManager
 
 
 class PoissonBlendingApp(Tkinter.Tk):
+    NUM_OF_EXAMPLES = 2  # Examples in the testimages folder.
+
     def __init__(self, parent):
         Tkinter.Tk.__init__(self, parent)
         self.src_img_manager = SourceImageManager()
@@ -71,15 +73,20 @@ class PoissonBlendingApp(Tkinter.Tk):
         def _draw_size_buttons(row, column, functions):
             size_buttons = Tkinter.Frame(self)
             size_buttons.grid(row=row, column=column)
-            plus_button = Tkinter.Button(size_buttons, text='+', width=2, command=functions['+'])
-            original_buttton = Tkinter.Button(size_buttons, text='100%', width=5, command=functions['original'])
-            minus_button = Tkinter.Button(size_buttons, text='-', width=2, command=functions['-'])
+            plus_button = Tkinter.Button(size_buttons, text='+', width=2,
+                                         command=functions['+'])
+            original_buttton = Tkinter.Button(size_buttons, text='100%',
+                                              width=5,
+                                              command=functions['original'])
+            minus_button = Tkinter.Button(size_buttons, text='-', width=2,
+                                          command=functions['-'])
             minus_button.pack(side=Tkinter.LEFT)
             original_buttton.pack(side=Tkinter.LEFT)
             plus_button.pack(side=Tkinter.LEFT)
 
         # _draw_size_buttons(2, 0, self.dst_img_manager.ZOOM_FUNCTIONS)  # Size buttons for destination image
-        _draw_size_buttons(2, 2, self.src_img_manager.ZOOM_FUNCTIONS)  # Size buttons for source image
+        _draw_size_buttons(2, 2,
+                           self.src_img_manager.ZOOM_FUNCTIONS)  # Size buttons for source image
 
         # Blend button
         Tkinter \
@@ -100,7 +107,23 @@ class PoissonBlendingApp(Tkinter.Tk):
         run_menu.add_command(label='Blend!', command=self.blend)
         menu_bar.add_cascade(label="Run", menu=run_menu)
 
+        example_menu = Tkinter.Menu(menu_bar)
+        for i in range(self.NUM_OF_EXAMPLES):
+            i += 1
+            example_menu.add_command(label="Example %d" % i,
+                                     command=self.load_example(i))
+        menu_bar.add_cascade(label="Examples", menu=example_menu)
+
         self.config(menu=menu_bar)
+
+    def load_example(self, example_number):
+        def _load_example():
+            src_path = './testimages/test%d_src.png' % example_number
+            dst_path = './testimages/test%d_target.png' % example_number
+            self.src_img_manager.open(src_path)
+            self.dst_img_manager.open(dst_path)
+
+        return _load_example
 
     def blend(self):
         src = np.asarray(self.src_img_manager.image_src)
