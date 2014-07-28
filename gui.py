@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 import Tkinter
+import tkFileDialog
+import tkMessageBox
 
 import PIL.Image
 import PIL.ImageTk
@@ -81,10 +83,10 @@ class PoissonBlendingApp(Tkinter.Tk):
             minus_button = Tkinter.Button(size_buttons, text='-', width=2,
                                           command=functions['-'])
             minus_button.pack(side=Tkinter.LEFT)
-            original_button.pack(side=Tkinter.LEFT)
+            original_buttton.pack(side=Tkinter.LEFT)
             plus_button.pack(side=Tkinter.LEFT)
 
-        #  Size buttons for destination image
+        # Size buttons for destination image
         # _draw_size_buttons(2, 0, self.dst_img_manager.ZOOM_FUNCTIONS)
 
         # Size buttons for source image
@@ -146,7 +148,23 @@ class PoissonBlendingApp(Tkinter.Tk):
         label = Tkinter.Label(result_window, image=self.image_tk_result)
         label.image = self.image_tk_result  # for holding reference counter
         label.pack()
+        save_button = Tkinter.Button(result_window, text='Save',
+                                     command=self.save_result(result_window))
+        save_button.pack()
+
         result_window.title("Blended Result")
+
+    def save_result(self, parent):
+        def _save_result():
+            file_name = tkFileDialog.asksaveasfilename(parent=parent)
+            try:
+                self.image_result.save(file_name)
+            except KeyError:
+                msg  = 'Unknown extension. Supported extensions:\n'
+                msg += ' '.join(PIL.Image.EXTENSION.keys())
+                tkMessageBox.showerror("Error", msg)
+
+        return _save_result
 
 
 if __name__ == "__main__":
