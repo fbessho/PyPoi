@@ -81,12 +81,14 @@ class PoissonBlendingApp(Tkinter.Tk):
             minus_button = Tkinter.Button(size_buttons, text='-', width=2,
                                           command=functions['-'])
             minus_button.pack(side=Tkinter.LEFT)
-            original_buttton.pack(side=Tkinter.LEFT)
+            original_button.pack(side=Tkinter.LEFT)
             plus_button.pack(side=Tkinter.LEFT)
 
-        # _draw_size_buttons(2, 0, self.dst_img_manager.ZOOM_FUNCTIONS)  # Size buttons for destination image
-        _draw_size_buttons(2, 2,
-                           self.src_img_manager.ZOOM_FUNCTIONS)  # Size buttons for source image
+        #  Size buttons for destination image
+        # _draw_size_buttons(2, 0, self.dst_img_manager.ZOOM_FUNCTIONS)
+
+        # Size buttons for source image
+        _draw_size_buttons(2, 2, self.src_img_manager.ZOOM_FUNCTIONS)
 
         # Blend button
         Tkinter \
