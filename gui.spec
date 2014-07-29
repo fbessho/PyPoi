@@ -5,11 +5,12 @@ a = Analysis(['gui.py'],
              hookspath=None,
              runtime_hooks=None)
 a.datas += [
-    ('testimages/test1_src.png',
-    './testimages/test1_src.png',
-    'DATA'),
-    ('testimages/test1_target.png',
-    'testimages/test1_target.png','DATA')
+    ('testimages/test1_src.png', './testimages/test1_src.png', 'DATA'),
+    ('testimages/test1_target.png', 'testimages/test1_target.png', 'DATA'),
+    ('testimages/test2_src.png', './testimages/test2_src.png', 'DATA'),
+    ('testimages/test2_target.png', 'testimages/test2_target.png', 'DATA'),
+    ('testimages/test3_src.png', './testimages/test3_src.png', 'DATA'),
+    ('testimages/test3_target.png', 'testimages/test3_target.png', 'DATA'),
     ]
 pyz = PYZ(a.pure)
 exe = EXE(pyz,

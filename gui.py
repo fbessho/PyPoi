@@ -12,7 +12,7 @@ from image_managers import SourceImageManager, DestinationImageManager
 
 
 class PoissonBlendingApp(Tkinter.Tk):
-    NUM_OF_EXAMPLES = 2  # Examples in the testimages folder.
+    NUM_OF_EXAMPLES = 3  # Examples in the testimages folder.
 
     def __init__(self, parent):
         Tkinter.Tk.__init__(self, parent)
