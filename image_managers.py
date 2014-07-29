@@ -14,9 +14,9 @@ class ImageManager():
         if len(path) > 0:
             self.open(path)
 
-    def open(self, path):
+    def open(self, path, **kwargs):
         self.path = path
-        self.load()
+        self.load(**kwargs)
         self.draw()
 
     def set_path(self, path):
@@ -50,9 +50,13 @@ class SourceImageManager(ImageManager):
     def add_propagation_func(self, callback_func):
         self.draw_propagate_functions.append(callback_func)
 
-    def load(self):
+    def load(self, mask_path=None):
         self.image_src = PIL.Image.open(self.path).convert("RGB")
-        self.image_mask = PIL.Image.new('L', self.image_src.size)
+        if mask_path:
+            self.image_mask = PIL.Image.open(mask_path).convert("L")
+        else:
+            self.image_mask = PIL.Image.new('L', self.image_src.size)
+
         self.original_size = self.image_src.size
         self.current_scale_percentage = 100
 
@@ -117,6 +121,9 @@ class SourceImageManager(ImageManager):
     def reset_size(self):
         self.current_scale_percentage = 100
         self.resize(1)
+
+    # def save_mask_image(self):
+    #     self.image_mask.save('mask.png')
 
 
 class DestinationImageManager(ImageManager):
