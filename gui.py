@@ -9,6 +9,7 @@ import numpy as np
 
 import poissonblending
 from image_managers import SourceImageManager, DestinationImageManager
+from util import resource_path as rp
 
 
 class PoissonBlendingApp(Tkinter.Tk):
@@ -32,11 +33,13 @@ class PoissonBlendingApp(Tkinter.Tk):
         self.create_menu()
         self.create_widgets()
 
-        self.src_img_manager.set_path('./testimages/test1_src.png')
-        self.src_img_manager.load()
+        self.src_img_manager.set_path(rp('./testimages/test1_src.png'))
+        self.src_img_manager.load(rp('./testimages/test1_mask.png'))
 
-        self.dst_img_manager.set_path('./testimages/test1_target.png')
+        self.dst_img_manager.set_path(rp('./testimages/test1_target.png'))
         self.dst_img_manager.load()
+        from testimages.config import offset
+        self.dst_img_manager.offset = offset[0]
 
         self.src_img_manager.draw()
 
@@ -93,9 +96,16 @@ class PoissonBlendingApp(Tkinter.Tk):
         _draw_size_buttons(2, 2, self.src_img_manager.ZOOM_FUNCTIONS)
 
         # Blend button
-        Tkinter \
-            .Button(self, text=u'Blend', command=self.blend) \
-            .grid(row=3, column=0, columnspan=3)
+        action_frame = Tkinter.Frame(self)
+        action_frame.grid(row=3, column=0, columnspan=3)
+
+        # def save_mask():
+        # self.src_img_manager.save_mask_image()
+        #     print self.dst_img_manager.offset
+        #
+        # Tkinter.Button(action_frame, text='Save mask image',
+        #                command=save_mask).pack()
+        Tkinter.Button(action_frame, text=u'Blend', command=self.blend).pack()
 
     def create_menu(self):
         menu_bar = Tkinter.Menu(self)
@@ -120,11 +130,26 @@ class PoissonBlendingApp(Tkinter.Tk):
 
         self.config(menu=menu_bar)
 
-    def load_example(self, example_number):
+    def load_example(self, example_id):
+        """
+         Load an example to GUI.
+        :param example_id: id starts with *one*
+        """
+
         def _load_example():
-            src_path = './testimages/test%d_src.png' % example_number
-            dst_path = './testimages/test%d_target.png' % example_number
-            self.src_img_manager.open(src_path)
+            src_path = rp('./testimages/test%d_src.png' % example_id)
+            dst_path = rp('./testimages/test%d_target.png' % example_id)
+            mask_path = None
+
+            try:
+                from testimages.config import offset
+
+                self.dst_img_manager.offset = offset[example_id - 1]
+                mask_path = rp('./testimages/test%d_mask.png' % example_id)
+            except IndexError:
+                pass
+
+            self.src_img_manager.open(src_path, mask_path=mask_path)
             self.dst_img_manager.open(dst_path)
 
         return _load_example
@@ -160,7 +185,7 @@ class PoissonBlendingApp(Tkinter.Tk):
             try:
                 self.image_result.save(file_name)
             except KeyError:
-                msg  = 'Unknown extension. Supported extensions:\n'
+                msg = 'Unknown extension. Supported extensions:\n'
                 msg += ' '.join(PIL.Image.EXTENSION.keys())
                 tkMessageBox.showerror("Error", msg)
 
