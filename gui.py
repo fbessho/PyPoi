@@ -198,5 +198,5 @@ class PoissonBlendingApp(Tkinter.Tk):
 
 if __name__ == "__main__":
     app = PoissonBlendingApp(None)
-    app.title('Poisson Blending')
+    app.title('PyPoi: "Py"thon Program for "Poi"sson Image Editing')
     app.mainloop()
