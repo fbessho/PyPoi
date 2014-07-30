@@ -2,12 +2,17 @@
 
 # Configuration
 # ----------------------------------------------------------------------------
-ONE_FILE = True
-project_path = 'C:\\Users\\nat\\PycharmProjects\\poisson-blending'
+ONE_FILE = False
+PROJECT_PATH = '/Users/besshf/repositories/poissonblending'
+OS = ('windows', 'macosx')[1] # 'windows' or 'macosx'
 # ----------------------------------------------------------------------------
 
+EXE_FILE_NAME = DIR_NAME = 'PyPoi'
+if OS == 'windows':
+    EXE_FILE_NAME += '.exe'
+
 a = Analysis(['gui.py'],
-             pathex=[project_path],
+             pathex=[PROJECT_PATH],
              hiddenimports=['scipy.special._ufuncs_cxx'],
              hookspath=None,
              runtime_hooks=None)
@@ -35,7 +40,7 @@ if ONE_FILE:
               a.binaries,
               a.zipfiles,
               a.datas,
-              name='PyPoi.exe',
+              name=EXE_FILE_NAME,
               debug=False,
               strip=None,
               upx=True,
@@ -44,7 +49,7 @@ else:
     exe = EXE(pyz,
               a.scripts,
               exclude_binaries=True,
-              name='PyPoi.exe',
+              name=EXE_FILE_NAME,
               debug=False,
               strip=None,
               upx=True,
@@ -55,4 +60,4 @@ else:
                    a.datas,
                    strip=None,
                    upx=True,
-                   name='gui')
+                   name=DIR_NAME)
