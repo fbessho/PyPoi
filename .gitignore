@@ -1,2 +1,5 @@
 *.pyc
+*.swp
 .idea/
+dist/
+build/

@@ -2,7 +2,7 @@
 import tkMessageBox
 import PIL.Image
 import PIL.ImageTk
-import ImageChops
+import PIL.ImageChops
 import tkFileDialog
 
 
@@ -84,7 +84,7 @@ class SourceImageManager(ImageManager):
             print "Mouse move:", event.x, event.y
             dx = event.x - self.sx
             dy = event.y - self.sy
-            self.image_mask = ImageChops.offset(self.image_mask, dx, dy)
+            self.image_mask = PIL.ImageChops.offset(self.image_mask, dx, dy)
             self.draw()
 
             self.sx, self.sy = event.x, event.y
@@ -130,8 +130,8 @@ class SourceImageManager(ImageManager):
             self.image_mask = PIL.Image.new('L', self.image_src.size)
             self.draw()
 
-    # def save_mask_image(self):
-    #     self.image_mask.save('mask.png')
+    def save_mask_image(self):
+        self.image_mask.save('mask.png')
 
 
 class DestinationImageManager(ImageManager):

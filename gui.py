@@ -11,9 +11,11 @@ import poissonblending
 from image_managers import SourceImageManager, DestinationImageManager
 from util import resource_path as rp
 
+SAVE_MASK_ENABLED = False  # Show 'Save mask image' button
+
 
 class PoissonBlendingApp(Tkinter.Tk):
-    NUM_OF_EXAMPLES = 3  # Examples in the testimages folder.
+    NUM_OF_EXAMPLES = 4  # Examples in the testimages folder.
 
     def __init__(self, parent):
         Tkinter.Tk.__init__(self, parent)
@@ -103,12 +105,14 @@ class PoissonBlendingApp(Tkinter.Tk):
         action_frame = Tkinter.Frame(self)
         action_frame.grid(row=3, column=0, columnspan=3)
 
-        # def save_mask():
-        # self.src_img_manager.save_mask_image()
-        #     print self.dst_img_manager.offset
-        #
-        # Tkinter.Button(action_frame, text='Save mask image',
-        #                command=save_mask).pack()
+        if SAVE_MASK_ENABLED:
+            def save_mask():
+                self.src_img_manager.save_mask_image()
+                print self.dst_img_manager.offset
+
+            Tkinter.Button(action_frame, text='Save mask image',
+                           command=save_mask).pack()
+
         Tkinter.Button(action_frame, text=u'Blend', command=self.blend).pack()
 
     def create_menu(self):
@@ -198,5 +202,5 @@ class PoissonBlendingApp(Tkinter.Tk):
 
 if __name__ == "__main__":
     app = PoissonBlendingApp(None)
-    app.title('Poisson Blending')
+    app.title('PyPoi: "Py"thon Program for "Poi"sson Image Editing')
     app.mainloop()
