@@ -74,6 +74,10 @@ class PoissonBlendingApp(Tkinter.Tk):
             b.pack(side=Tkinter.LEFT)
         self.src_img_manager.set_edit_mode_str(edit_mode)
 
+        b = Tkinter.Button(edit_options_frame, text='Clear',
+                           command=self.src_img_manager.clear_mask)
+        b.pack(side=Tkinter.LEFT)
+
         # Size buttons
         def _draw_size_buttons(row, column, functions):
             size_buttons = Tkinter.Frame(self)

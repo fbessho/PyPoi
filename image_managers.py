@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import tkMessageBox
 import PIL.Image
 import PIL.ImageTk
 import ImageChops
@@ -112,15 +113,22 @@ class SourceImageManager(ImageManager):
 
     def shrink_by_ten_percent(self):
         self.current_scale_percentage -= 10
-        self.resize(self.current_scale_percentage/100.0)
+        self.resize(self.current_scale_percentage / 100.0)
 
     def zoom_by_ten_percent(self):
         self.current_scale_percentage += 10
-        self.resize(self.current_scale_percentage/100.0)
+        self.resize(self.current_scale_percentage / 100.0)
 
     def reset_size(self):
         self.current_scale_percentage = 100
         self.resize(1)
+
+    def clear_mask(self):
+        yn = tkMessageBox.askokcancel('Clear mask image',
+                                      'Mask will be cleared, do you proceed?')
+        if yn:
+            self.image_mask = PIL.Image.new('L', self.image_src.size)
+            self.draw()
 
     # def save_mask_image(self):
     #     self.image_mask.save('mask.png')
