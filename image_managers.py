@@ -130,8 +130,8 @@ class SourceImageManager(ImageManager):
             self.image_mask = PIL.Image.new('L', self.image_src.size)
             self.draw()
 
-    # def save_mask_image(self):
-    #     self.image_mask.save('mask.png')
+    def save_mask_image(self):
+        self.image_mask.save('mask.png')
 
 
 class DestinationImageManager(ImageManager):
