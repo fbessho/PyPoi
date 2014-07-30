@@ -2,13 +2,13 @@
 
 # Configuration
 # ----------------------------------------------------------------------------
-ONE_FILE = False
-PROJECT_PATH = '/Users/besshf/repositories/poissonblending'
-OS = ('windows', 'macosx')[1] # 'windows' or 'macosx'
+ONE_FILE = True
+PROJECT_PATH = 'C:\Users\nat\PycharmProjects\poisson-blending'
+OS = ('win', 'macosx')[0] # 'win' or 'macosx'
 # ----------------------------------------------------------------------------
 
-EXE_FILE_NAME = DIR_NAME = 'PyPoi'
-if OS == 'windows':
+EXE_FILE_NAME = DIR_NAME = ('PyPoi-0.1.0-%s' % OS)
+if OS == 'win':
     EXE_FILE_NAME += '.exe'
 
 a = Analysis(['gui.py'],
