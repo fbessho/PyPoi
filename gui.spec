@@ -35,20 +35,20 @@ if ONE_FILE:
               a.binaries,
               a.zipfiles,
               a.datas,
-              name='gui.exe',
+              name='PyPoi.exe',
               debug=False,
               strip=None,
               upx=True,
-              console=True )
+              console=False )
 else:
     exe = EXE(pyz,
               a.scripts,
               exclude_binaries=True,
-              name='gui.exe',
+              name='PyPoi.exe',
               debug=False,
               strip=None,
               upx=True,
-              console=True )
+              console=False )
     coll = COLLECT(exe,
                    a.binaries,
                    a.zipfiles,
