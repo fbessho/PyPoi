@@ -30,11 +30,11 @@ mkvirtualenv pypoi
 ```
 Install required packages
 ```
-pip install -r requirement.txt
+pip install -r requirements.txt
 ```
 **If you get error in pyamg installation, please install numpy first by the following command, and try the install command above again.**
 ```
-pip install $(grep numpy requirement.txt)
+pip install $(grep numpy requirements.txt)
 # or
 # pip install numpy==1.8.1
 # or
