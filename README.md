@@ -10,6 +10,10 @@ Some examples are already ready for you, but you can also load arbitrary images 
 Well... no worries! If you're using **Windows** or **Mac OS**, you simply need to download files and run it to try this program.
 
 ### Simple installation
+
+    $ pip install PyPoi
+
+### Alternative installation
 1. Go to [the release page](https://github.com/fbessho/PyPoi/releases)
 2. From the latest version, download zip file (recommended) or executable file.
 3. If you download zip file, extract the file in any folder, and double click
