@@ -1,5 +1,6 @@
 # PyPoi
-**PyPoi** is an image processing GUI program written in Python. It stands for "**Py**thon Program for **Poi**sson Image Editing"
+**PyPoi** is an image processing GUI program written in Python. It stands for
+ "**Py**thon Program for **Poi**sson Image Editing" under Apache License 2.0. 
 
 It enable you to try Poisson Image Editing method interactively.
 Some examples are already ready for you, but you can also load arbitrary images and try it.
@@ -89,6 +90,9 @@ Main enhancements are listed in [the issue tracker](https://github.com/fbessho/P
 * [#12 Calculation speed improvement](https://github.com/fbessho/PyPoi/issues/12)
 
 It's more than welcome if you can pick up one/some of them.
+
+## License
+PyPoi is provided under Apache License 2.0. Please refer to [LICENSE](License) 
 
 ## Acknowledgement
 The core function is from [parosky/poissonblending/](https://github.com/parosky/poissonblending/)
