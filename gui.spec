@@ -2,12 +2,13 @@
 
 # Configuration
 # ----------------------------------------------------------------------------
+__VERSION__ = '0.1.1'
 ONE_FILE = True
 PROJECT_PATH = 'C:\Users\nat\PycharmProjects\poisson-blending'
 OS = ('win', 'macosx')[0] # 'win' or 'macosx'
 # ----------------------------------------------------------------------------
 
-EXE_FILE_NAME = DIR_NAME = ('PyPoi-0.1.0-%s' % OS)
+EXE_FILE_NAME = DIR_NAME = ('PyPoi-%s-%s' % (__VERSION__, OS))
 if OS == 'win':
     EXE_FILE_NAME += '.exe'
 
@@ -17,7 +18,7 @@ a = Analysis(['gui.py'],
              hookspath=None,
              runtime_hooks=None)
 
-for i in range(1, 4):
+for i in range(1, 5):
     base = 'testimages/test%d' % i
     a.datas += [
         (base + '_src.png', base + '_src.png', 'DATA'),
