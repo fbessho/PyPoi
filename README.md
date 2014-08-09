@@ -1,6 +1,6 @@
 # PyPoi
 **PyPoi** is an image processing GUI program written in Python. It stands for
- " __Py__ thon Program for __Poi__ sson Image Editing" under Apache License 2.0. 
+ "__Py__thon Program for __Poi__sson Image Editing" under Apache License 2.0.
 
 It enables you to try Poisson Image Editing method interactively.
 Some examples are already ready for you, but you can also load arbitrary images and try it.
@@ -21,19 +21,26 @@ It is recommended to use virtualenv. Please refer to [this guide](http://docs.py
 ) to know how to install/use it if you're not familiar with it.
 
 First of all, clone the repository
+
 ```
 git clone https://github.com/fbessho/PyPoi.git
 cd PyPoi
 ```
-Then create a new virtualenv and install required packages.
+
+Then create a new virtualenv
+
 ```
 mkvirtualenv pypoi
 ```
+
 Install required packages
+
 ```
 pip install -r requirements.txt
 ```
+
 **If you get error in pyamg installation, please install numpy first by the following command, and try the install command above again.**
+
 ```
 pip install $(grep numpy requirements.txt)
 # or
@@ -41,8 +48,10 @@ pip install $(grep numpy requirements.txt)
 # or
 # pip install numpy
 ```
+
 Alright, now you're ready to start. Try the following command.
 An old-fashioned tkinter GUI should appear in front of you :beer:.
+
 ```
 python gui.py
 ```
@@ -92,7 +101,7 @@ Main enhancements are listed in [the issue tracker](https://github.com/fbessho/P
 It's more than welcome if you can pick up one/some of them.
 
 ## License
-PyPoi is provided under Apache License 2.0. Please refer to [LICENSE](License) 
+PyPoi is provided under Apache License 2.0. Please refer to [LICENSE](License)
 
 ## Acknowledgement
 The core function is from [parosky/poissonblending/](https://github.com/parosky/poissonblending/)
