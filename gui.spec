@@ -8,7 +8,11 @@ PROJECT_PATH = 'C:\Users\nat\PycharmProjects\poisson-blending'
 OS = ('win', 'macosx')[0] # 'win' or 'macosx'
 # ----------------------------------------------------------------------------
 
-EXE_FILE_NAME = DIR_NAME = ('PyPoi-%s-%s' % (__VERSION__, OS))
+# Specify dir/file names
+DIR_NAME = 'PyPoi-%s-%s' % (__VERSION__, OS)
+EXE_FILE_NAME = 'PyPoi'
+if ONE_FILE:
+    EXE_FILE_NAME += '-%s-%s' % (__VERSION__, OS)
 if OS == 'win':
     EXE_FILE_NAME += '.exe'
 
