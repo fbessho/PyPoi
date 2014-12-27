@@ -7,9 +7,10 @@ import PIL.Image
 import PIL.ImageTk
 import numpy as np
 
-import poissonblending
-from image_managers import SourceImageManager, DestinationImageManager
-from util import resource_path as rp
+from pypoi import poissonblending
+from pypoi.image_managers import SourceImageManager, DestinationImageManager
+from pypoi.util import resource_path as rp
+
 
 SAVE_MASK_ENABLED = False  # Show 'Save mask image' button
 

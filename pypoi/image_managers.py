@@ -3,6 +3,7 @@ import tkMessageBox
 import PIL.Image
 import PIL.ImageTk
 import PIL.ImageChops
+import PIL.ImageDraw
 import tkFileDialog
 
 
@@ -23,9 +24,13 @@ class ImageManager():
     def set_path(self, path):
         self.path = path
 
+    def on_mouse_move2(self):
+        pass
+
     def set_tk_label(self, tk_label):
         tk_label.bind('<Button-1>', self.on_mouse_down)
         tk_label.bind('<B1-Motion>', self.on_mouse_move)
+        tk_label.bind('<B2-Motion>', self.on_mouse_move2)
         self.tk_label = tk_label
 
 
@@ -139,20 +144,27 @@ class DestinationImageManager(ImageManager):
         ImageManager.__init__(self)
         self.src_img_manager = src_img_manager
         self.src_img_manager.add_propagation_func(self.draw)
+
         self.offset = (0, 0)
+        self.rotate = 30
 
     def load(self):
         self.image = PIL.Image.open(self.path).convert("RGB")
 
     def draw(self):
         image_to_show = self.image.copy()
-        img_src = self.src_img_manager.image_src
-        mask = self.src_img_manager.image_mask
-
-        image_to_show.paste(img_src, self.offset, mask)
+        self.draw_mask(image_to_show)
 
         self.image_tk = PIL.ImageTk.PhotoImage(image_to_show)
         self.tk_label.configure(image=self.image_tk)
+
+    def draw_mask(self, image):
+        mask = self.src_img_manager.image_mask.copy().rotate(self.rotate)
+        img_src = self.src_img_manager.image_src.copy().rotate(self.rotate)
+
+
+        image.paste(img_src, self.offset, mask)
+
 
     def on_mouse_down(self, event):
         self.sx, self.sy = event.x, event.y
@@ -164,3 +176,10 @@ class DestinationImageManager(ImageManager):
         self.draw()
 
         self.sx, self.sy = event.x, event.y
+
+    def on_mouse_down2(self, event):
+        self.sx, self.sy = event.x, event.y
+
+    def on_mouse_move2(self, event):
+        pass
+
