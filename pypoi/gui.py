@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+import logging
+
 import Tkinter
 import tkFileDialog
 import tkMessageBox
@@ -13,6 +14,8 @@ from pypoi.util import resource_path as rp
 
 
 SAVE_MASK_ENABLED = False  # Show 'Save mask image' button
+
+logger = logging.getLogger('GUI')
 
 
 class PoissonBlendingApp(Tkinter.Tk):
@@ -41,7 +44,7 @@ class PoissonBlendingApp(Tkinter.Tk):
 
         self.dst_img_manager.set_path(rp('./testimages/test1_target.png'))
         self.dst_img_manager.load()
-        from testimages.config import offset
+        from pypoi.testimages.config import offset
         self.dst_img_manager.offset = offset[0]
 
         self.src_img_manager.draw()
@@ -60,24 +63,33 @@ class PoissonBlendingApp(Tkinter.Tk):
         label_src.grid(row=0, column=2)
         self.src_img_manager.set_tk_label(label_src)
 
-        # Draw/Erase/Move buttons
-        edit_options_frame = Tkinter.Frame(self)
-        edit_options_frame.grid(row=1, column=2)
-        edit_mode = Tkinter.StringVar()
-        edit_mode.set('draw')
-        edit_options = (
-            ('Draw', 'draw'),
-            ('Erase', 'erase'),
-            ('Move', 'move'),
-        )
-        for text, mode in edit_options:
-            b = Tkinter.Radiobutton(edit_options_frame, text=text,
-                                    variable=edit_mode, value=mode,
+        # Destination image buttons (Move, Rotate)
+        dst_img_buttons = Tkinter.Frame(self)
+        dst_img_buttons.grid(row=1, column=0)
+        dst_edit_mode = Tkinter.StringVar()
+        dst_edit_mode.trace('w', self.dst_img_manager.mode_changed)
+        dst_edit_mode.set('move')
+        for text, mode in self.dst_img_manager.EDIT_MODES:
+            b = Tkinter.Radiobutton(
+                dst_img_buttons, text=text, variable=dst_edit_mode, value=mode,
+                indicatoron=0)
+            b.pack(side=Tkinter.LEFT)
+        self.dst_img_manager.set_edit_mode_str(dst_edit_mode)
+
+        # Source image buttons (Draw/Erase/Move)
+        src_img_buttons = Tkinter.Frame(self)
+        src_img_buttons.grid(row=1, column=2)
+        src_edit_mode = Tkinter.StringVar()
+        src_edit_mode.set('draw')
+
+        for text, mode in self.src_img_manager.EDIT_MODES:
+            b = Tkinter.Radiobutton(src_img_buttons, text=text,
+                                    variable=src_edit_mode, value=mode,
                                     indicatoron=0)
             b.pack(side=Tkinter.LEFT)
-        self.src_img_manager.set_edit_mode_str(edit_mode)
+        self.src_img_manager.set_edit_mode_str(src_edit_mode)
 
-        b = Tkinter.Button(edit_options_frame, text='Clear',
+        b = Tkinter.Button(src_img_buttons, text='Clear',
                            command=self.src_img_manager.clear_mask)
         b.pack(side=Tkinter.LEFT)
 
@@ -95,9 +107,6 @@ class PoissonBlendingApp(Tkinter.Tk):
             minus_button.pack(side=Tkinter.LEFT)
             original_buttton.pack(side=Tkinter.LEFT)
             plus_button.pack(side=Tkinter.LEFT)
-
-        # Size buttons for destination image
-        # _draw_size_buttons(2, 0, self.dst_img_manager.ZOOM_FUNCTIONS)
 
         # Size buttons for source image
         _draw_size_buttons(2, 2, self.src_img_manager.ZOOM_FUNCTIONS)
@@ -151,7 +160,7 @@ class PoissonBlendingApp(Tkinter.Tk):
             mask_path = None
 
             try:
-                from testimages.config import offset
+                from pypoi.testimages.config import offset
 
                 self.dst_img_manager.offset = offset[example_id - 1]
                 mask_path = rp('./testimages/test%d_mask.png' % example_id)
@@ -164,11 +173,12 @@ class PoissonBlendingApp(Tkinter.Tk):
         return _load_example
 
     def blend(self):
-        src = np.asarray(self.src_img_manager.image_src)
+        angle = self.dst_img_manager.rotate
+        src = np.asarray(self.src_img_manager.image_src.rotate(angle))
         src.flags.writeable = True
         dst = np.asarray(self.dst_img_manager.image)
         dst.flags.writeable = True
-        mask = np.asarray(self.src_img_manager.image_mask)
+        mask = np.asarray(self.src_img_manager.image_mask.rotate(angle))
         mask.flags.writeable = True
 
         # poissonblending.blend takes (y, x) as offset,
@@ -202,6 +212,7 @@ class PoissonBlendingApp(Tkinter.Tk):
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
     app = PoissonBlendingApp(None)
     app.title('PyPoi: "Py"thon Program for "Poi"sson Image Editing')
     app.mainloop()

@@ -1,10 +1,15 @@
-#!/usr/bin/env python
+import logging
 import tkMessageBox
 import PIL.Image
 import PIL.ImageTk
 import PIL.ImageChops
 import PIL.ImageDraw
 import tkFileDialog
+import math
+from collections import namedtuple
+
+
+EditMode = namedtuple('EditMode', 'display value')
 
 
 class ImageManager():
@@ -24,6 +29,9 @@ class ImageManager():
     def set_path(self, path):
         self.path = path
 
+    def draw(self):
+        """Called when GUI needs to be refreshed"""
+
     def on_mouse_move2(self):
         pass
 
@@ -35,11 +43,20 @@ class ImageManager():
 
 
 class SourceImageManager(ImageManager):
-    """Manage source image and mask image
-    self.path       - path to source image file
-    self.image_src  - PIL.Image object of source image
-    self.image_mask - PIL.Image object of mask image
+    """Manage source image and mask image, which is shown on the right hand
+    side in the GUI.
+
+    Attributes:
+        self.path: path to source image file.
+        self.image_src: PIL.Image object of source image.
+        self.image_mask: PIL.Image object of mask image.
+        self.edit_mode: Tkinter.StringVar(). Stores current mode selected.
     """
+    EDIT_MODES = (
+        EditMode('Draw', 'draw'),
+        EditMode('Erase', 'erase'),
+        EditMode('Move', 'move'),
+    )
 
     def __init__(self):
         ImageManager.__init__(self)
@@ -49,6 +66,11 @@ class SourceImageManager(ImageManager):
             '-': self.shrink_by_ten_percent,
             'original': self.reset_size
         }
+
+        self.path = None
+        self.image_src = None
+        self.image_mask = None
+        self.edit_mode = None
 
     def set_edit_mode_str(self, edit_mode_str):
         self.edit_mode = edit_mode_str
@@ -140,13 +162,26 @@ class SourceImageManager(ImageManager):
 
 
 class DestinationImageManager(ImageManager):
+    """Manage destination image, the one on the left hand side in the GUI.
+
+    Attributes:
+        rotate: In degrees
+        edit_mode: Tkinter.StringVar(). Stores current mode selected.
+    """
+    logger = logging.getLogger('DestinationImageManager')
+    EDIT_MODE_MOVE = EditMode('Move', 'move')
+    EDIT_MODE_ROTATE = EditMode('Rotate', 'rotate')
+    EDIT_MODES = (EDIT_MODE_MOVE, EDIT_MODE_ROTATE)
+
     def __init__(self, src_img_manager):
         ImageManager.__init__(self)
         self.src_img_manager = src_img_manager
         self.src_img_manager.add_propagation_func(self.draw)
 
+        self.image = None
         self.offset = (0, 0)
-        self.rotate = 30
+        self.rotate = 0
+        self.edit_mode = None
 
     def load(self):
         self.image = PIL.Image.open(self.path).convert("RGB")
@@ -159,27 +194,70 @@ class DestinationImageManager(ImageManager):
         self.tk_label.configure(image=self.image_tk)
 
     def draw_mask(self, image):
-        mask = self.src_img_manager.image_mask.copy().rotate(self.rotate)
-        img_src = self.src_img_manager.image_src.copy().rotate(self.rotate)
+        img_src = self.src_img_manager.image_src.copy()
+        mask = self.src_img_manager.image_mask.copy()
 
+        # Draw box around mask
+        mask_bbox = self.src_img_manager.image_mask.getbbox()
+        if (mask_bbox is not None and
+            self.edit_mode.get() == self.EDIT_MODE_ROTATE.value):
+            draw = PIL.ImageDraw.Draw(img_src)
+            draw.rectangle(mask_bbox, None, 'red')
+
+            draw = PIL.ImageDraw.Draw(mask)
+            draw.rectangle(mask_bbox, None, 'white')
+
+        img_src = img_src.rotate(self.rotate)
+        mask = mask.rotate(self.rotate)
 
         image.paste(img_src, self.offset, mask)
 
+    def set_edit_mode_str(self, edit_mode):
+        self.edit_mode = edit_mode
 
     def on_mouse_down(self, event):
         self.sx, self.sy = event.x, event.y
 
     def on_mouse_move(self, event):
-        dx, dy = (event.x - self.sx, event.y - self.sy)
-        x, y = self.offset
-        self.offset = (x + dx, y + dy)
+
+        if self.edit_mode.get() == self.EDIT_MODE_MOVE.value:
+            dx, dy = (event.x - self.sx, event.y - self.sy)
+            x, y = self.offset
+            self.offset = (x + dx, y + dy)
+
+        elif self.edit_mode.get() == self.EDIT_MODE_ROTATE.value:
+            self.logger.info('ROTATE!!')
+            x0, y0 = self.calc_center_of_mask()
+            rotate_old = self.calc_angle(x0, y0, self.sx, self.sy)
+            rotate_new = self.calc_angle(x0, y0, event.x, event.y)
+            self.rotate += rotate_new - rotate_old
+
+        else:
+            self.logger.error('Invalid edit mode: %s' % self.edit_mode.get())
+
         self.draw()
-
         self.sx, self.sy = event.x, event.y
 
-    def on_mouse_down2(self, event):
-        self.sx, self.sy = event.x, event.y
+    def calc_angle(self, x0, y0, x1, y1):
+        """Calc angle from (x0, y0) to (x1, y1).
 
-    def on_mouse_move2(self, event):
-        pass
+        x0, y0, x1, y1 is provided as PIL coordinates (top-left is the root),
+        however return value is angle in the normal mathematical coordinates
+        (bottom-left is the root).
 
+        Returns:
+            Angle in degrees
+        """
+        y0, y1 = -y0, -y1
+        angle_in_radian = math.atan2((y1-y0), (x1-x0))
+        return angle_in_radian / math.pi * 180.0
+
+    def calc_center_of_mask(self):
+        """Returns center of the mask image."""
+        left, upper, right, lower = self.src_img_manager.image_mask.getbbox()
+        return (left+right)/2.0, (upper+lower)/2.0
+
+    def mode_changed(self, *args, **kwargs):
+        """Callback function which is called when mode changes"""
+        if self.image:
+            self.draw()
