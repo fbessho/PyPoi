@@ -167,6 +167,9 @@ class DestinationImageManager(ImageManager):
     Attributes:
         rotate: In degrees
         edit_mode: Tkinter.StringVar(). Stores current mode selected.
+        image: A destination image as a PIL.Image object.
+        src_img_cropped: Source image cropped to mask area.
+        src_mask_cropped: Mask image cropped to mask area.
     """
     logger = logging.getLogger('DestinationImageManager')
     EDIT_MODE_MOVE = EditMode('Move', 'move')
@@ -179,6 +182,8 @@ class DestinationImageManager(ImageManager):
         self.src_img_manager.add_propagation_func(self.draw)
 
         self.image = None
+        self.src_img_cropped = None
+        self.src_mask_cropped = None
         self.offset = (0, 0)
         self.rotate = 0
         self.edit_mode = None
@@ -194,11 +199,15 @@ class DestinationImageManager(ImageManager):
         self.tk_label.configure(image=self.image_tk)
 
     def draw_mask(self, image):
+        """Add mask to image"""
+
         img_src = self.src_img_manager.image_src.copy()
         mask = self.src_img_manager.image_mask.copy()
 
         # Draw box around mask
         mask_bbox = self.src_img_manager.image_mask.getbbox()
+        l, u, r, b = mask_bbox
+        mask_bbox = l+1, u+1, r-1, b-1  # shrink bbox by 1px to avoid run out of edge
         if (mask_bbox is not None and
             self.edit_mode.get() == self.EDIT_MODE_ROTATE.value):
             draw = PIL.ImageDraw.Draw(img_src)
@@ -207,10 +216,13 @@ class DestinationImageManager(ImageManager):
             draw = PIL.ImageDraw.Draw(mask)
             draw.rectangle(mask_bbox, None, 'white')
 
-        img_src = img_src.rotate(self.rotate)
-        mask = mask.rotate(self.rotate)
+        squared_msk_img = SquareMaskImage(img_src, mask, self.offset, self.rotate)
 
-        image.paste(img_src, self.offset, mask)
+        image.paste(
+            squared_msk_img.squared_src_img,
+            squared_msk_img.offset,
+            squared_msk_img.squared_msk_img
+        )
 
     def set_edit_mode_str(self, edit_mode):
         self.edit_mode = edit_mode
@@ -226,7 +238,6 @@ class DestinationImageManager(ImageManager):
             self.offset = (x + dx, y + dy)
 
         elif self.edit_mode.get() == self.EDIT_MODE_ROTATE.value:
-            self.logger.info('ROTATE!!')
             x0, y0 = self.calc_center_of_mask()
             rotate_old = self.calc_angle(x0, y0, self.sx, self.sy)
             rotate_new = self.calc_angle(x0, y0, event.x, event.y)
@@ -261,3 +272,36 @@ class DestinationImageManager(ImageManager):
         """Callback function which is called when mode changes"""
         if self.image:
             self.draw()
+
+
+class SquareMaskImage():
+    def __init__(self, src_img, msk_img, offset, rotate):
+        self.squared_src_img, self.squared_msk_img = self.create_images(src_img, msk_img)
+        self.squared_src_img = self.squared_src_img.rotate(rotate)
+        self.squared_msk_img = self.squared_msk_img.rotate(rotate)
+
+        self.offset = self.calc_new_offset(msk_img, offset)
+
+    def create_images(self, src_img, mask_img):
+        left, upper, right, lower = mask_img.getbbox()
+        square_size = int(math.sqrt((right-left)**2 + (upper-lower)**2))  # create square of this px on a side
+        cropped_mask_image = mask_img.crop(mask_img.getbbox())
+        cropped_src_image = src_img.crop(mask_img.getbbox())
+
+        square_src_image = PIL.Image.new(src_img.mode, (square_size, square_size))
+        square_mask_image = PIL.Image.new(mask_img.mode, (square_size, square_size))
+
+        center_of_square = (square_size/2, square_size/2)
+        top_left = (center_of_square[0] - (right-left)/2), (center_of_square[1] - (lower-upper)/2)
+        square_src_image.paste(cropped_src_image, top_left)
+        square_mask_image.paste(cropped_mask_image, top_left)
+
+        return square_src_image, square_mask_image
+
+    def calc_new_offset(self, msk_img, original_offset):
+        left, upper, right, lower = msk_img.getbbox()
+        center_of_bbox = (left+right)/2, (upper+lower)/2
+        square_size = int(math.sqrt((right-left)**2 + (upper-lower)**2))
+        offset_delta = center_of_bbox[0] - square_size/2, center_of_bbox[1] - square_size/2
+
+        return (original_offset[0] + offset_delta[0]), (original_offset[1] + offset_delta[1])

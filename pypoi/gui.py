@@ -163,6 +163,7 @@ class PoissonBlendingApp(Tkinter.Tk):
                 from pypoi.testimages.config import offset
 
                 self.dst_img_manager.offset = offset[example_id - 1]
+                self.dst_img_manager.rotate = 0
                 mask_path = rp('./testimages/test%d_mask.png' % example_id)
             except IndexError:
                 pass
