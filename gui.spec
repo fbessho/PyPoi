@@ -1,29 +1,36 @@
 # -*- mode: python -*-
+import platform
+import os
 
 # Configuration
 # ----------------------------------------------------------------------------
-__VERSION__ = '0.1.1'
-ONE_FILE = True
-PROJECT_PATH = 'C:\Users\nat\PycharmProjects\poisson-blending'
-OS = ('win', 'macosx')[0] # 'win' or 'macosx'
+__VERSION__ = '0.1.2'
+ONE_FILE = os.environ.get('PYPOI_BUILD_ONE_FILE', "") == 'yes'
+PROJECT_PATH = os.path.abspath(os.path.dirname(__file__))
+OS = platform.system().lower()
 # ----------------------------------------------------------------------------
+
+logger.info('== Configuration ==')
+logger.info('OS: %s', OS)
+logger.info('Mode: %s', 'one file mode' if ONE_FILE else 'multiple file mode')
+logger.info('Project Path: %s', PROJECT_PATH)
 
 # Specify dir/file names
 DIR_NAME = 'PyPoi-%s-%s' % (__VERSION__, OS)
 EXE_FILE_NAME = 'PyPoi'
 if ONE_FILE:
     EXE_FILE_NAME += '-%s-%s' % (__VERSION__, OS)
-if OS == 'win':
+if OS == 'windows':
     EXE_FILE_NAME += '.exe'
 
-a = Analysis(['gui.py'],
+a = Analysis(['pypoi\gui.py'],
              pathex=[PROJECT_PATH],
              hiddenimports=['scipy.special._ufuncs_cxx'],
              hookspath=None,
              runtime_hooks=None)
 
 for i in range(1, 5):
-    base = 'testimages/test%d' % i
+    base = 'pypoi/testimages/test%d' % i
     a.datas += [
         (base + '_src.png', base + '_src.png', 'DATA'),
         (base + '_target.png', base + '_target.png', 'DATA'),
