@@ -12,7 +12,7 @@ def resource_path(relative):
     ref: http://stackoverflow.com/questions/13946650/pyinstaller-2-0-bundle-file-as-onefile
     """
     if hasattr(sys, '_MEIPASS'):
-        root = sys._MEIPASS
+        root = os.path.join(sys._MEIPASS, 'pypoi')
     else:
         root = os.path.abspath(os.path.dirname(__file__))
 
