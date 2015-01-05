@@ -53,6 +53,7 @@ Alright, now you're ready to start. Try the following command.
 An old-fashioned tkinter GUI should appear in front of you :beer:.
 
 ```
+cd pypoi
 python gui.py
 ```
 
