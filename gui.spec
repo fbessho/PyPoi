@@ -4,7 +4,7 @@ import os
 
 # Configuration
 # ----------------------------------------------------------------------------
-__VERSION__ = '0.1.2'
+__VERSION__ = '0.2.0'
 ONE_FILE = os.environ.get('PYPOI_BUILD_ONE_FILE', "") == 'yes'
 PROJECT_PATH = os.path.abspath(os.path.dirname(__file__))
 OS = platform.system().lower()
