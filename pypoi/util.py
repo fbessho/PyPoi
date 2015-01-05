@@ -1,6 +1,7 @@
 import os
 import sys
 
+
 def resource_path(relative):
     """
     Resolve path to resource (for supporting PyInstaller).
@@ -13,6 +14,6 @@ def resource_path(relative):
     if hasattr(sys, '_MEIPASS'):
         root = sys._MEIPASS
     else:
-        root = os.path.abspath(".")
+        root = os.path.abspath(os.path.dirname(__file__))
 
     return os.path.join(root, relative)
