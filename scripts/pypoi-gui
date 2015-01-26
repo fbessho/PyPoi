@@ -1,0 +1,5 @@
+#!python
+
+import pypoi.gui
+
+pypoi.gui.main()
