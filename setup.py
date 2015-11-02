@@ -1,5 +1,5 @@
-from setuptools import setup
 import os
+from setuptools import setup
 
 desciption = '"Py"thon program for "Poi"sson Image Editing'
 if os.path.exists('README.txt'):
