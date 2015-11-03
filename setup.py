@@ -28,3 +28,4 @@ setup(
     package_data={'pypoi': ['testimages/*.png']},
     scripts=['scripts/pypoi']
 )
+
