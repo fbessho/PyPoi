@@ -1,14 +1,10 @@
-"""Used to register PyPoi to PyPI"""
-import pandoc
+"""Convert README.me to rST format."""
+import pypandoc
 import os
 
-pandoc.core.PANDOC_PATH = '/usr/local/bin/pandoc'
+if os.path.exists('README.txt'):
+    print 'Removing README.txt'
+    os.remove('README.txt')
 
-doc = pandoc.Document()
-doc.markdown = open('README.md').read()
-f = open('README.txt', 'w')
-f.write(doc.rst)
-f.close()
-os.system("setup.py register")
-os.remove('README.txt')
+output = pypandoc.convert('README.md', 'rst', outputfile='README.txt')
 
