@@ -26,6 +26,7 @@ setup(
     url='https://github.com/fbessho/PyPoi',
     packages=['pypoi', 'pypoi.testimages'],
     package_data={'pypoi': ['testimages/*.png']},
-    scripts=['scripts/pypoi']
+    scripts=['scripts/pypoi'],
+    install_requires=['Pillow', 'numpy', 'pyamg', 'scipy']
 )
 
