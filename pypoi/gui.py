@@ -212,8 +212,13 @@ class PoissonBlendingApp(Tkinter.Tk):
         return _save_result
 
 
-if __name__ == "__main__":
+def main():
+    global app
     logging.basicConfig(level=logging.INFO)
     app = PoissonBlendingApp(None)
     app.title('PyPoi: "Py"thon Program for "Poi"sson Image Editing')
     app.mainloop()
+
+
+if __name__ == "__main__":
+    main()

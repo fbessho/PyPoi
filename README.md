@@ -8,9 +8,16 @@ Some examples are already ready for you, but you can also load arbitrary images 
 ![demo gif](images/demo.gif)
 
 ## Get Started
-Well... no worries! If you're using **Windows** or **Mac OS**, you simply need to download files and run it to try this program.
+You can install PyPoi through pip. Alternatively binary files are available for **Windows** or **Mac OS**, you simply need to download files and run it to try this program.
+
+### Use pip
+```
+pip install pypoi
+```
+Once you install PyPoi, you can run `pypoi` command to open the GUI.
 
 ### Simple installation
+For non-developer or Windows user.
 1. Go to [the release page](https://github.com/fbessho/PyPoi/releases)
 2. From the latest version, download zip file (recommended) or executable file.
 3. If you download zip file, extract the file in any folder, and double click
