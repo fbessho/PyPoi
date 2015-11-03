@@ -11,3 +11,4 @@ f.write(doc.rst)
 f.close()
 os.system("setup.py register")
 os.remove('README.txt')
+
