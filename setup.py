@@ -9,7 +9,7 @@ else:
 
 setup(
     name='pypoi',
-    version='0.2.0',
+    version='0.2.1',
     description=desciption,
     long_description=long_description,
     license='Apache License 2.0',
