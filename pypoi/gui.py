@@ -1,3 +1,4 @@
+from __future__ import print_function
 import logging
 
 import Tkinter
@@ -118,7 +119,7 @@ class PoissonBlendingApp(Tkinter.Tk):
         if SAVE_MASK_ENABLED:
             def save_mask():
                 self.src_img_manager.save_mask_image()
-                print self.dst_img_manager.offset
+                print(self.dst_img_manager.offset)
 
             Tkinter.Button(action_frame, text='Save mask image',
                            command=save_mask).pack()
