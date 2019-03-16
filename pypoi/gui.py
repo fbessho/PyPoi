@@ -175,12 +175,9 @@ class PoissonBlendingApp(Tkinter.Tk):
 
     def blend(self):
         angle = self.dst_img_manager.rotate
-        src = np.asarray(self.src_img_manager.image_src.rotate(angle))
-        src.flags.writeable = True
-        dst = np.asarray(self.dst_img_manager.image)
-        dst.flags.writeable = True
-        mask = np.asarray(self.src_img_manager.image_mask.rotate(angle))
-        mask.flags.writeable = True
+        src = np.array(self.src_img_manager.image_src.rotate(angle))
+        dst = np.array(self.dst_img_manager.image)
+        mask = np.array(self.src_img_manager.image_mask.rotate(angle))
 
         # poissonblending.blend takes (y, x) as offset,
         # whereas gui has (x, y) as offset values so reverse these values.
