@@ -2,16 +2,14 @@ import os
 from setuptools import setup
 
 desciption = '"Py"thon program for "Poi"sson Image Editing'
-if os.path.exists('README.txt'):
-    long_description = open('README.txt').read()
-else:
-    long_description = desciption
+long_description = open('README.md').read()
 
 setup(
     name='pypoi',
-    version='0.2.1',
+    version='0.3.0',
     description=desciption,
     long_description=long_description,
+    long_description_content_type='text/markdown',
     license='Apache License 2.0',
     classifiers=[
         'Development Status :: 3 - Alpha',
@@ -19,6 +17,7 @@ setup(
         'Environment :: Win32 (MS Windows)',
         'License :: OSI Approved :: Apache Software License',
         'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
     ],
 
     author='Fumihiro Bessho (Ben)',
@@ -27,6 +26,6 @@ setup(
     packages=['pypoi', 'pypoi.testimages'],
     package_data={'pypoi': ['testimages/*.png']},
     scripts=['scripts/pypoi'],
-    install_requires=['Pillow', 'numpy', 'pyamg', 'scipy']
+    install_requires=['Pillow', 'numpy', 'pyamg', 'scipy', 'future']
 )
 
