@@ -8,64 +8,13 @@ License 2.0. PyPoi stands for "<b>Py</b>thon Program for <b>Poi</b>sson Image Ed
 It enables you to try the Poisson Image Editing method interactively.
 Some examples are already ready for you, but you can also load arbitrary images and try it.
 
-![demo gif](images/demo.gif)
+![demo gif](https://github.com/fbessho/PyPoi/raw/master/images/demo.gif)
 
-## Get Started
-You can install PyPoi through pip. Alternatively binary files are available for **Windows** or **Mac OS**, you simply need to download files and run it to try this program.
-
-### Use pip
+## Installation
 ```
 pip install pypoi
 ```
-Once you install PyPoi, you can run `pypoi` command to open the GUI.
-
-### Simple installation
-For non-developer or Windows user.
-1. Go to [the release page](https://github.com/fbessho/PyPoi/releases)
-2. From the latest version, download zip file (recommended) or executable file.
-3. If you download zip file, extract the file in any folder, and double click
-
-### Run from repository (for developer)
-You need to have **Python2.7** and pip installed before starting it.
-It is recommended to use virtualenv. Please refer to [this guide](http://docs.python-guide.org/en/latest/dev/virtualenvs/
-) to know how to install/use it if you're not familiar with it.
-
-First of all, clone the repository
-
-```
-git clone https://github.com/fbessho/PyPoi.git
-cd PyPoi
-```
-
-Then create a new virtualenv
-
-```
-mkvirtualenv pypoi
-```
-
-Install required packages
-
-```
-pip install -r requirements.txt
-```
-
-**If you get error in pyamg installation, please install numpy first by the following command, and try the install command above again.**
-
-```
-pip install $(grep numpy requirements.txt)
-# or
-# pip install numpy==1.8.1
-# or
-# pip install numpy
-```
-
-Alright, now you're ready to start. Try the following command.
-An old-fashioned tkinter GUI should appear in front of you :beer:.
-
-```
-cd pypoi
-python gui.py
-```
+Run `pypoi` command to open the GUI.
 
 
 ## What is Poisson Image Editing?
