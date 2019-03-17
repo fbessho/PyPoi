@@ -1,4 +1,3 @@
-from __future__ import print_function
 from __future__ import division
 from future import standard_library
 standard_library.install_aliases()
@@ -106,7 +105,6 @@ class SourceImageManager(ImageManager):
 
     def on_mouse_down(self, event):
         if self.edit_mode.get() == 'move':
-            print("Mouse button down:", event.x, event.y)
             self.sx, self.sy = event.x, event.y
         elif self.edit_mode.get() == 'draw':
             self.modify_mask(event.x, event.y, 255)
@@ -115,7 +113,6 @@ class SourceImageManager(ImageManager):
 
     def on_mouse_move(self, event):
         if self.edit_mode.get() == 'move':
-            print("Mouse move:", event.x, event.y)
             dx = event.x - self.sx
             dy = event.y - self.sy
             self.image_mask = PIL.ImageChops.offset(self.image_mask, dx, dy)
