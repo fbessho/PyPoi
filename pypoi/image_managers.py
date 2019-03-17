@@ -268,7 +268,7 @@ class DestinationImageManager(ImageManager):
         """
         y0, y1 = -y0, -y1
         angle_in_radian = math.atan2((y1-y0), (x1-x0))
-        return old_div(angle_in_radian, math.pi * 180.0)
+        return angle_in_radian / math.pi * 180.0
 
     def calc_center_of_mask(self):
         """Returns center of the mask image."""
