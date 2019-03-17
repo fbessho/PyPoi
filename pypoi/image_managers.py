@@ -1,10 +1,16 @@
+from __future__ import division
+from future import standard_library
+standard_library.install_aliases()
+from builtins import range
+from past.utils import old_div
+from builtins import object
 import logging
-import tkMessageBox
+import tkinter.messagebox
 import PIL.Image
 import PIL.ImageTk
 import PIL.ImageChops
 import PIL.ImageDraw
-import tkFileDialog
+import tkinter.filedialog
 import math
 from collections import namedtuple
 
@@ -12,12 +18,12 @@ from collections import namedtuple
 EditMode = namedtuple('EditMode', 'display value')
 
 
-class ImageManager():
+class ImageManager(object):
     def __init__(self):
         pass
 
     def open_from_dialog(self):
-        path = tkFileDialog.askopenfilename()
+        path = tkinter.filedialog.askopenfilename()
         if len(path) > 0:
             self.open(path)
 
@@ -99,7 +105,6 @@ class SourceImageManager(ImageManager):
 
     def on_mouse_down(self, event):
         if self.edit_mode.get() == 'move':
-            print "Mouse button down:", event.x, event.y
             self.sx, self.sy = event.x, event.y
         elif self.edit_mode.get() == 'draw':
             self.modify_mask(event.x, event.y, 255)
@@ -108,7 +113,6 @@ class SourceImageManager(ImageManager):
 
     def on_mouse_move(self, event):
         if self.edit_mode.get() == 'move':
-            print "Mouse move:", event.x, event.y
             dx = event.x - self.sx
             dy = event.y - self.sy
             self.image_mask = PIL.ImageChops.offset(self.image_mask, dx, dy)
@@ -151,7 +155,7 @@ class SourceImageManager(ImageManager):
         self.resize(1)
 
     def clear_mask(self):
-        yn = tkMessageBox.askokcancel('Clear mask image',
+        yn = tkinter.messagebox.askokcancel('Clear mask image',
                                       'Mask will be cleared, do you proceed?')
         if yn:
             self.image_mask = PIL.Image.new('L', self.image_src.size)
@@ -274,7 +278,7 @@ class DestinationImageManager(ImageManager):
             self.draw()
 
 
-class SquareMaskImage():
+class SquareMaskImage(object):
     def __init__(self, src_img, msk_img, offset, rotate):
         self.squared_src_img, self.squared_msk_img = self.create_images(src_img, msk_img)
         self.squared_src_img = self.squared_src_img.rotate(rotate)
@@ -291,8 +295,8 @@ class SquareMaskImage():
         square_src_image = PIL.Image.new(src_img.mode, (square_size, square_size))
         square_mask_image = PIL.Image.new(mask_img.mode, (square_size, square_size))
 
-        center_of_square = (square_size/2, square_size/2)
-        top_left = (center_of_square[0] - (right-left)/2), (center_of_square[1] - (lower-upper)/2)
+        center_of_square = (old_div(square_size,2), old_div(square_size,2))
+        top_left = (center_of_square[0] - old_div((right-left),2)), (center_of_square[1] - old_div((lower-upper),2))
         square_src_image.paste(cropped_src_image, top_left)
         square_mask_image.paste(cropped_mask_image, top_left)
 
@@ -300,8 +304,8 @@ class SquareMaskImage():
 
     def calc_new_offset(self, msk_img, original_offset):
         left, upper, right, lower = msk_img.getbbox()
-        center_of_bbox = (left+right)/2, (upper+lower)/2
+        center_of_bbox = old_div((left+right),2), old_div((upper+lower),2)
         square_size = int(math.sqrt((right-left)**2 + (upper-lower)**2))
-        offset_delta = center_of_bbox[0] - square_size/2, center_of_bbox[1] - square_size/2
+        offset_delta = center_of_bbox[0] - old_div(square_size,2), center_of_bbox[1] - old_div(square_size,2)
 
         return (original_offset[0] + offset_delta[0]), (original_offset[1] + offset_delta[1])
