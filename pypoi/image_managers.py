@@ -155,8 +155,9 @@ class SourceImageManager(ImageManager):
         self.resize(1)
 
     def clear_mask(self):
-        yn = tkinter.messagebox.askokcancel('Clear mask image',
-                                      'Mask will be cleared, do you proceed?')
+        yn = tkinter.messagebox.askokcancel(
+            'Clear mask image',
+            'Mask will be cleared, do you proceed?')
         if yn:
             self.image_mask = PIL.Image.new('L', self.image_src.size)
             self.draw()
@@ -210,6 +211,11 @@ class DestinationImageManager(ImageManager):
 
         # Draw box around mask
         mask_bbox = self.src_img_manager.image_mask.getbbox()
+
+        # Mask is empty, no need to draw mask
+        if mask_bbox is None:
+            return
+
         l, u, r, b = mask_bbox
         mask_bbox = l+1, u+1, r-1, b-1  # shrink bbox by 1px to avoid run out of edge
         if (mask_bbox is not None and
