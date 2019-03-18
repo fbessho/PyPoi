@@ -1,5 +1,0 @@
-Pillow==2.5.1
-numpy==1.8.1
-pyamg==2.1.0
-scipy==0.14.0
-
