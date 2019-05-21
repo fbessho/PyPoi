@@ -11,11 +11,7 @@ Some examples are already ready for you, but you can also load arbitrary images 
 ![demo gif](https://github.com/fbessho/PyPoi/raw/master/images/demo.gif)
 
 ## Installation
-```
-pip install pypoi
-```
-Run `pypoi` command to open the GUI.
-
+See [INSTALL.md](INSTALL.md)
 
 ## What is Poisson Image Editing?
 Poisson Image Editing is a technique to blend two images _seamlessly_.
