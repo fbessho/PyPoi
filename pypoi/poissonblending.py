@@ -79,8 +79,7 @@ def blend(img_target, img_source, img_mask, offset=(0, 0)):
 
         # assign x to target image
         x = np.reshape(x, region_size)
-        x[x > 255] = 255
-        x[x < 0] = 0
+        x = np.clip(x, 0, 255)
         x = np.array(x, img_target.dtype)
         img_target[region_target[0]:region_target[2], region_target[1]:region_target[3], num_layer] = x
 
