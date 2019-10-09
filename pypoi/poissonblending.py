@@ -75,7 +75,7 @@ def blend(img_target, img_source, img_mask, offset=(0, 0)):
                     b[index] = t[index]
 
         # solve Ax = b
-        x = pyamg.solve(A, b, verb=False, tol=1e-10)
+        x = scipy.sparse.linalg.spsolve(A, b)
 
         # assign x to target image
         x = np.reshape(x, region_size)
