@@ -58,6 +58,10 @@ def blend(img_target, img_source, img_mask, offset=(0, 0)):
     # create poisson matrix for b
     P = pyamg.gallery.poisson(img_mask.shape)
 
+    # get positions in mask that should be taken from the target
+    inverted_img_mask = np.invert(img_mask.astype(np.bool)).flatten()
+    positions_from_target = np.where(inverted_img_mask)[0]
+
     # for each layer (ex. RGB)
     for num_layer in range(img_target.shape[2]):
         # get subimages
@@ -68,11 +72,7 @@ def blend(img_target, img_source, img_mask, offset=(0, 0)):
 
         # create b
         b = P * s
-        for y in range(region_size[0]):
-            for x in range(region_size[1]):
-                if not img_mask[y, x]:
-                    index = x + y * region_size[1]
-                    b[index] = t[index]
+        b[positions_from_target] = t[positions_from_target]
 
         # solve Ax = b
         x = scipy.sparse.linalg.spsolve(A, b)
