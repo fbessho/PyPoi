@@ -27,22 +27,33 @@ def blend(img_target, img_source, img_mask, offset=(0, 0)):
     img_mask[img_mask == 0] = False
     img_mask[img_mask != False] = True
 
-    # create coefficient matrix
-    A = scipy.sparse.identity(np.prod(region_size), format='lil')
-    for y in range(region_size[0]):
-        for x in range(region_size[1]):
-            if img_mask[y, x]:
-                index = x + y * region_size[1]
-                A[index, index] = 4
-                if index + 1 < np.prod(region_size):
-                    A[index, index + 1] = -1
-                if index - 1 >= 0:
-                    A[index, index - 1] = -1
-                if index + region_size[1] < np.prod(region_size):
-                    A[index, index + region_size[1]] = -1
-                if index - region_size[1] >= 0:
-                    A[index, index - region_size[1]] = -1
-    A = A.tocsr()
+    # determines the diagonals on the coefficient matrix
+    positions = np.where(img_mask)
+    # setting the positions to be in a flatted manner
+    positions = (positions[0] * region_size[1]) + positions[1]
+
+    # row and col size of coefficient matrix
+    n = np.prod(region_size)
+
+    main_diagonal = np.ones(n)
+    main_diagonal[positions] = 4
+    diagonals = [main_diagonal]
+    diagonals_positions = [0]
+
+    # creating the diagonals of the coefficient matrix
+    for diagonal_pos in [-1, 1, -region_size[1], region_size[1]]:
+        in_bounds_indices = None
+        if np.any(positions + diagonal_pos > n):
+            in_bounds_indices = np.where(positions + diagonal_pos < n)[0]
+        elif np.any(positions + diagonal_pos < 0):
+            in_bounds_indices = np.where(positions + diagonal_pos >= 0)[0]
+        in_bounds_positions = positions[in_bounds_indices]
+
+        diagonal = np.zeros(n)
+        diagonal[in_bounds_positions + diagonal_pos] = -1
+        diagonals.append(diagonal)
+        diagonals_positions.append(diagonal_pos)
+    A = scipy.sparse.spdiags(diagonals, diagonals_positions, n, n, 'csr')
 
     # create poisson matrix for b
     P = pyamg.gallery.poisson(img_mask.shape)
