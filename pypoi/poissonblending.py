@@ -9,6 +9,36 @@ import pyamg
 
 
 def blend(img_target, img_source, img_mask, offset=(0, 0)):
+    """
+    Parameters
+    ----------
+    img_target : np.ndarray
+        target image to blend in with. should be atleast the size of the img_source
+    img_source : np.ndarray 
+        source image to be blended. basically the foreground image
+    img_mask : np.ndarray
+        mask of hand. preferabbly uint8 mask values of range 0 .. 255
+    offset : tuple
+        TODO what is this?
+
+    Returns
+    -------
+    blended image : np.ndarray
+        the blended image of img_target and img_source
+    
+    Notes
+    -----
+    currently pass the img_target to be atleast of same shape as img_source or bigger. The consideration of size is left to user for now.
+    """
+
+    # handling our mask
+    if img_mask.ndim == 3:
+        img_mask = img_mask[:, :, 0]
+    
+    if img_mask.max() <= 1:
+        img_mask *= 255
+        img_mask = img_mask.astype(np.uint8)
+
     # compute regions to be blended
     region_source = (
         max(-offset[0], 0),
@@ -49,17 +79,23 @@ def blend(img_target, img_source, img_mask, offset=(0, 0)):
             in_bounds_indices = np.where(positions + diagonal_pos >= 0)[0]
         in_bounds_positions = positions[in_bounds_indices]
 
-        diagonal = np.zeros(n)
-        diagonal[in_bounds_positions + diagonal_pos] = -1
-        diagonals.append(diagonal)
-        diagonals_positions.append(diagonal_pos)
+        # create diagonal
+        temp_diagonal_index = in_bounds_positions + diagonal_pos
+        # check if the diagonal is in bounds
+        temp_diagonal_index = temp_diagonal_index[np.where(temp_diagonal_index < n)]
+        # check if it is not empty 
+        if not temp_diagonal_index.size == 0:
+            diagonal = np.zeros(n)
+            diagonal[temp_diagonal_index] = -1
+            diagonals.append(diagonal)
+            diagonals_positions.append(diagonal_pos)
     A = scipy.sparse.spdiags(diagonals, diagonals_positions, n, n, 'csr')
 
     # create poisson matrix for b
-    P = pyamg.gallery.poisson(img_mask.shape)
+    P = pyamg.gallery.poisson(img_mask.shape) 
 
     # get positions in mask that should be taken from the target
-    inverted_img_mask = np.invert(img_mask.astype(np.bool)).flatten()
+    inverted_img_mask = np.invert(img_mask.astype(bool)).flatten()
     positions_from_target = np.where(inverted_img_mask)[0]
 
     # for each layer (ex. RGB)
@@ -83,8 +119,7 @@ def blend(img_target, img_source, img_mask, offset=(0, 0)):
         x = np.array(x, img_target.dtype)
         img_target[region_target[0]:region_target[2], region_target[1]:region_target[3], num_layer] = x
 
-    return img_target
-
+    return img_target[region_target[0]:region_target[2], region_target[1]:region_target[3], :]
 
 def test():
     img_mask = np.asarray(PIL.Image.open('./testimages/test1_mask.png'))
